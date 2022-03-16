@@ -33,7 +33,7 @@ class Cell {
 		);
 	}
 	darkColor(){
-		this.color = ;
+		this.color = "#282828";
 	}
 
 	changeColor(color = this.c) {
