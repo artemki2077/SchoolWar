@@ -1,3 +1,5 @@
+// import {teams, codes} from './config.js';
+
 window.onload = () => setInterval(draw, 1000 / 60);
 
 var canvas = document.getElementById("canvas");
@@ -5,14 +7,23 @@ var ctx = canvas.getContext("2d");
 var width = 600;
 var height = 600;
 var grid = 20;
+let cursor = {
+  x: -60,
+  y: -60,
+	i: 0,
+	j: 0,
+};
 canvas.width = width + 2;
 canvas.height = height + 2;
 ctx.textAlign = "center";
 var cells = Array(grid).fill().map((cell) => (cell = Array(grid)));
+var code = "1";
 
-function rect(x, y, w, h, c) {
+function rect(x, y, w, h, c, alpha = 1) {
+	ctx.globalAlpha = alpha;
 	ctx.fillStyle = c;
 	ctx.fillRect(x, y, w, h);
+	ctx.globalAlpha = 1.0;
 }
 
 class Cell {
@@ -22,18 +33,16 @@ class Cell {
 		this.w = width / grid;
 		this.x = i * this.w + 2;
 		this.y = j * this.w + 2;
+		this.c = c
 		this.changeColor();
 		this.show();
-		this.c = c
 	}
 
 	checkMouse(x, y) {
-		return (
-			x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.w
-		);
+		return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.w);
 	}
 	darkColor(){
-		this.color = "#282828";
+		this.color = "#A1E7FB";
 	}
 
 	changeColor(color = this.c) {
@@ -42,6 +51,7 @@ class Cell {
 	show() {
 		rect(this.x, this.y, this.w - 2, this.w - 2, this.color);
 	}
+	
 }
 
 function addHexColor(c1, c2) {
@@ -69,7 +79,6 @@ function start(){
 }
 
 
-	
 // rect(ix + 2, iy + 2, width / grid - 2, height / grid - 2, "#fff");
 
 function getCursorPosition(canvas, event) {
@@ -78,11 +87,31 @@ function getCursorPosition(canvas, event) {
 	const y = event.clientY - rect.top;
 	callAll((item) => {
 		if (item.checkMouse(x, y)) {
-			item.darkColor();
-		}else{
-			item.changeColor();
+			cursor.x = item.x;
+			cursor.y = item.y;
+			cursor.i = item.i;
+			cursor.j = item.j;
 		}
 	});
+}
+
+function click(e) {
+		alert("click");
+		$.ajax({
+    type: 'POST',
+    url: 'https://schoolwar.maxar2005.repl.co/click',
+    data: {
+        'x': cursor.i,
+				'y': cursor.j,
+        "id": 1
+    },
+    success: function(msg){
+			if msg.indexOf("SUCCESS") == -1:
+				alert(msg);
+			start();
+			
+    }
+});
 }
 
 function callAll(callback, reverse) {
@@ -98,9 +127,11 @@ start();
 canvas.addEventListener("mousemove", function (e) {
 	getCursorPosition(canvas, e);
 });
+canvas.addEventListener("click", click)
 
 function draw() {
 	callAll((item) => {
 		item.show();
 	});
+	rect(cursor.x, cursor.y, (width / grid) -2, (height / grid) - 2, "#808080", alpha = 0.5);
 }
