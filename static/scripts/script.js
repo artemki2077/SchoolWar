@@ -1,6 +1,9 @@
 // import {teams, codes} from './config.js';
 
 window.onload = () => setInterval(draw, 1000 / 60);
+for(let i=0;i < 50; i++){
+	console.log(`%c ${i + 1}:  если вы хотите что то взломать то вы здесь ничего не найдёте`, 'background: #222; color: #ff0000; font-size: 1.5em');
+}
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -13,11 +16,13 @@ let cursor = {
 	i: 0,
 	j: 0,
 };
+var neighbor = [[0, 1], [1, 0], [-1, 0], [0, -1]];
+
 canvas.width = width + 2;
 canvas.height = height + 2;
 ctx.textAlign = "center";
 var cells = Array(grid).fill().map((cell) => (cell = Array(grid)));
-var code = "1";
+var code = "666";
 
 function rect(x, y, w, h, c, alpha = 1) {
 	ctx.globalAlpha = alpha;
@@ -37,6 +42,11 @@ class Cell {
 		this.changeColor();
 		this.show();
 	}
+	check(team){
+		for(let i=0; i < neighbor.length;i++ ){
+			
+		}
+	}	
 
 	checkMouse(x, y) {
 		return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.w);
@@ -63,7 +73,6 @@ function addHexColor(c1, c2) {
 function start(){
 	rect(0, 0, width + 2, width + 2, "#A1E7FB");
 	$.getJSON('https://schoolwar.maxar2005.repl.co/map', function(data) {
-		console.log(data);
 	   for (let ix = 0; ix < grid; ix += 1){
 		for (let iy = 0; iy < grid; iy += 1){
 			if(data[ix][iy].team == null){
@@ -86,32 +95,38 @@ function getCursorPosition(canvas, event) {
 	const x = event.clientX - rect.left;
 	const y = event.clientY - rect.top;
 	callAll((item) => {
-		if (item.checkMouse(x, y)) {
-			cursor.x = item.x;
-			cursor.y = item.y;
-			cursor.i = item.i;
-			cursor.j = item.j;
+		if(item != undefined){
+			if (item.checkMouse(x, y)) {
+				cursor.x = item.x;
+				cursor.y = item.y;
+				cursor.i = item.i;
+				cursor.j = item.j;
+			}
 		}
 	});
 }
 
+
 function click(e) {
+	if(1){
 		alert("click");
 		$.ajax({
-    type: 'POST',
-    url: 'https://schoolwar.maxar2005.repl.co/click',
-    data: {
-        'x': cursor.i,
+		    type: 'POST',
+		    url: 'https://schoolwar.maxar2005.repl.co/click',
+		    data: {
+		        'x': cursor.i,
 				'y': cursor.j,
-        "id": 1
-    },
-    success: function(msg){
-			if msg.indexOf("SUCCESS") == -1:
-				alert(msg);
-			start();
-			
-    }
-});
+		        "id": "1"
+		    },
+		    success: function(msg){
+					start();
+					if (msg.indexOf("SUCCESS") == -1){
+						alert(msg);
+					}
+		
+					
+		    }
+		});}
 }
 
 function callAll(callback, reverse) {
@@ -131,7 +146,9 @@ canvas.addEventListener("click", click)
 
 function draw() {
 	callAll((item) => {
-		item.show();
+		if(item != undefined){
+			item.show();
+		}
 	});
 	rect(cursor.x, cursor.y, (width / grid) -2, (height / grid) - 2, "#808080", alpha = 0.5);
 }
