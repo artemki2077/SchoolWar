@@ -116,7 +116,7 @@ function click(e) {
 		    data: {
 		        'x': cursor.i,
 				'y': cursor.j,
-		        "id": "1"
+		        "id": "9"
 		    },
 		    success: function(msg){
 					start();
