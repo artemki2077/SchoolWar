@@ -1,6 +1,6 @@
 import datetime as dt
 
-waiting = dt.timedelta(seconds=30)
+waiting = dt.timedelta(minutes=5)
 
 teams = {
 	"LEV": ['1', '2', '3', '4'],
@@ -12,6 +12,6 @@ teams = {
 colors = {
 	"LEV": "#FFA500",
 	"VOLKI": "#333333",
-	"VORONI": "8b00ff",
+	"VORONI": "#8b00ff",
 	"clean": "#fff"
 }

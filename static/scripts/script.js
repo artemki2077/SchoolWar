@@ -5,7 +5,7 @@ update();
 
 let cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
 let cameraZoom = 1
-let MAX_ZOOM = 10
+let MAX_ZOOM = 20
 let MIN_ZOOM = 0.8
 var last_map = [];
 var canvas_size = window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth;
@@ -16,6 +16,13 @@ var move_y = 0;
 var click_x;
 var click_y;
 var color = "#000000"
+var color_n = 9;
+var colors = [
+	"#FFA500", "#664200", "#331a00", "#00fac8", "#009476", "#9600c8", "#490061", "#e1beaa", "#c4845e", 
+	"#ffaabe", "#ff5f82", "#000000", "#808080", "#COCOCO", "#FFFFFF", "#FFOOFF", "#800080", "#FF0000", 
+	"#800000", "#FFFF00", "#808000", "#00FF00", "#008000", "#00FFFF", "#008080", "#0000FF", "#000080"
+]
+
 
 let cursor = {
   x: -60,
@@ -71,15 +78,14 @@ function draw()
     ctx.scale(cameraZoom, cameraZoom)
     ctx.translate( -window.innerWidth / 2 + cameraOffset.x, -window.innerHeight / 2 + cameraOffset.y )
     ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
-	rect(-(canvas_size / 2), -(canvas_size / 2), canvas_size + 2, canvas_size + 2, "#A1E7FB");
+	// rect(-(canvas_size / 2), -canvas_size, canvas_size, canvas_size / 3, "#fff")
+	rect(-(canvas_size / 2), -(canvas_size / 2), canvas_size + 2, canvas_size + 2, "#a1e7fb");
     callAll((item) => {
 				if(item != undefined){
 					item.show();
 					if(item.checkMouse(move_x, move_y)){
-						cursor.y = item.y;
-						cursor.x = item.x;
-						cursor.i = item.i;
-						cursor.j = item.j;
+						cursor.y = item.y;cursor.x = item.x;
+						cursor.i = item.i;cursor.j = item.j;
 					}
 				}
 			if(!phone){
@@ -254,13 +260,26 @@ function adjustZoom(zoomAmount, zoomFactor)
 }
 
 function click(e) {
+	now_x = ((getEventLocation(e).x - (window.innerWidth / 2))/cameraZoom) + (window.innerWidth / 2)  - cameraOffset.x;
+	now_y = ((getEventLocation(e).y - (window.innerHeight / 2))/cameraZoom) + (window.innerHeight / 2)  - cameraOffset.y;
+	callAll((item) => {
+				if(item != undefined){
+					item.show();
+					if(item.checkMouse(now_x, now_y)){
+						cursor.y = item.y;
+						cursor.x = item.x;
+						cursor.i = item.i;
+						cursor.j = item.j;
+					}
+				}
+			});
 	$.ajax({
 		type: 'POST',
 		url: 'https://schoolwar.maxar2005.repl.co/click',
 		data: {
 			'x': cursor.i,
 			'y': cursor.j,
-			"color": "#ff0000"
+			"color": color
 		},
 		success: function(msg){
 				update();
