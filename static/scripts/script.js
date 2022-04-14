@@ -6,7 +6,7 @@ update();
 let cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
 let cameraZoom = 1
 let MAX_ZOOM = 10
-let MIN_ZOOM = 0.1
+let MIN_ZOOM = 0.8
 var last_map = [];
 var canvas_size = window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth;
 let SCROLL_SENSITIVITY = 0.0005
@@ -15,6 +15,7 @@ var move_x = 0;
 var move_y = 0;
 var click_x;
 var click_y;
+var color = "#000000"
 
 let cursor = {
   x: -60,
@@ -74,13 +75,11 @@ function draw()
     callAll((item) => {
 				if(item != undefined){
 					item.show();
-					if(!phone){
-						if(item.checkMouse(move_x, move_y)){
-							cursor.y = item.y;
-							cursor.x = item.x;
-							cursor.i = item.i;
-							cursor.j = item.j;
-						}
+					if(item.checkMouse(move_x, move_y)){
+						cursor.y = item.y;
+						cursor.x = item.x;
+						cursor.i = item.i;
+						cursor.j = item.j;
 					}
 				}
 			if(!phone){
@@ -160,6 +159,9 @@ function onPointerDown(e)
     isDragging = true
     dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x
     dragStart.y = getEventLocation(e).y/cameraZoom - cameraOffset.y
+	click_x = getEventLocation(e).x;
+	click_y = getEventLocation(e).y;
+	
 
 	
 }
@@ -169,6 +171,11 @@ function onPointerUp(e)
     isDragging = false
     initialPinchDistance = null
     lastZoom = cameraZoom
+	if (Math.abs(click_x - getEventLocation(e).x) < 6  && Math.abs(click_y - getEventLocation(e).y) < 6 && 
+		move_x < (canvas_size / 2) && move_y < (canvas_size / 2)){
+		click(e);
+	}
+	
 }
 
 function onPointerMove(e)
@@ -180,8 +187,7 @@ function onPointerMove(e)
     }
 	move_x = ((getEventLocation(e).x - (window.innerWidth / 2))/cameraZoom) + (window.innerWidth / 2)  - cameraOffset.x;
 	move_y =((getEventLocation(e).y - (window.innerHeight / 2))/cameraZoom) + (window.innerHeight / 2)  - cameraOffset.y;
-	// console.log(getEventLocation(e).x, getEventLocation(e).y);
-	
+	// console.log(move_x, move_y);
 	
 }
 
@@ -254,21 +260,19 @@ function click(e) {
 		data: {
 			'x': cursor.i,
 			'y': cursor.j,
-			"id": "10"
+			"color": "#ff0000"
 		},
 		success: function(msg){
 				update();
 				if (msg.indexOf("SUCCESS") == -1){
 					alert(msg);
 				}
-	
-				
 		}
 	});
 }
 
 for(let i=0;i < 50; i++){
-	console.log(`%c ${i + 1}:  если вы хотите что то взломать то вы здесь ничего не найдёте`, 'background: #222; color: #ff0000; font-size: 1.5em');
+	console.log(`%c ${i + 1}:  Стас лох`, 'background: #222; color: #ff0000; font-size: 1.5em');
 }
 
 canvas.addEventListener('mousedown', onPointerDown)
