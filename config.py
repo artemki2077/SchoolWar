@@ -1,6 +1,6 @@
 import datetime as dt
 
-waiting = dt.timedelta(minutes=5)
+waiting = dt.timedelta(minutes=3)
 
 teams = {
 	"LEV": ['1', '2', '3', '4'],
