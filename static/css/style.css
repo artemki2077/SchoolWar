@@ -7,11 +7,35 @@ html, body
 	background: #282A35;
 }
 
+.colors{
+	width: 100vw;
+	height: 11.5vh;
+	position: relative;
+	display:block;
+	white-space: nowrap;
+  	overflow-x: auto;
+	display: flex;
+	scroll-snap-type: x mandatory;
+}
+.color{
+	margin-top: 5px;
+	width: 9vh;
+	height: 9vh;
+  	border: 0;
+  	border-radius: 5px;
+  	color: #fff;
+}
+center{
+	height: 10vh;
+}
+
+
 #canvas
 {
   width: 100%;
   height: 100%;
   background: #282A35;
+	position: absolute;
 }
 * {
     margin: 0;
@@ -19,12 +43,12 @@ html, body
     box-sizing:border-box;
 }
 
-@media (max-width: 992px) {
+/* @media (max-width: 992px) {
     .alert-validate::before {
         visibility: visible;
         opacity: 1
     }
-}
+} */
 
 body, html {
     height: 100%;

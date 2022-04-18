@@ -2,14 +2,20 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 	<link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
 	<title>School War</title>
 </head>
 <body>
+	
 	<canvas id="canvas"></canvas>
+	<div class="colors">
+		<center>
+			{% for i in colors %}
+			    <button class="color" style="background: {{i}};" onclick="setColor('{{i}}');"></button>
+			{% endfor %}
+		</center>
+	</div>
 	<script src="{{ url_for('static',filename='scripts/script.js') }}"></script>
 </body>
 </html>

@@ -22,7 +22,8 @@ def getUserbyTel(id):
 
 @app.route('/map')
 def base():
-    return jsonify(list(map(lambda x: list(map(lambda i: dict(i), x)), db["map"])))
+    return jsonify(
+        list(map(lambda x: list(map(lambda i: dict(i), x)), db["map"])))
 
 
 @app.route("/login", methods=['POST', 'GET'])
@@ -30,7 +31,7 @@ def login():
     login = session.get("username")
     if login is not None:
         return redirect("/")
-    answer = ""
+    answer = "регистрация в тг @art_gamebot"
     if request.method == 'POST':
         login = request.form.get('username')
         password = request.form.get('pass')
@@ -43,8 +44,12 @@ def login():
             else:
                 session["username"] = login
                 resp = make_response(redirect("/"))
-                resp.set_cookie('username', login, max_age=60 * 60 * 24 * 365 * 2)
-                resp.set_cookie('password', password, max_age=60 * 60 * 24 * 365 * 2)
+                resp.set_cookie('username',
+                                login,
+                                max_age=60 * 60 * 24 * 365 * 2)
+                resp.set_cookie('password',
+                                password,
+                                max_age=60 * 60 * 24 * 365 * 2)
                 return resp
         else:
             answer = "empty password or login"
@@ -58,7 +63,8 @@ def click():
         id = session.get("username", -1)
         if id == -1:
             return redirect("/login")
-        last_time = dt.datetime.strptime(db["time"].get(id, "23/04/2003 00:00:00"), "%d/%m/%Y %H:%M:%S")
+        last_time = dt.datetime.strptime(
+            db["time"].get(id, "23/04/2003 00:00:00"), "%d/%m/%Y %H:%M:%S")
         x = int(request.form.get('x'))
         y = int(request.form.get('y'))
         color = request.form.get('color')
@@ -92,17 +98,23 @@ def index():
     login = session.get("username")
     if login is None:
         return redirect("/login")
-    return render_template("index.html")
+    return render_template("index.html", colors=conf.colors)
 
 
 @bot.message_handler(commands=["start", "help", "h"])
 def start(message: telebot.types.Message):
     key = telebot.types.InlineKeyboardMarkup()
-    button1 = telebot.types.InlineKeyboardButton(text="регистрация", callback_data="регистрация")
-    button2 = telebot.types.InlineKeyboardButton(text="help", callback_data="help")
-    button3 = telebot.types.InlineKeyboardButton(text="забыл пароль", callback_data="забыл пароль")
+    button1 = telebot.types.InlineKeyboardButton(text="регистрация",
+                                                 callback_data="регистрация")
+    button2 = telebot.types.InlineKeyboardButton(text="help",
+                                                 callback_data="help")
+    button3 = telebot.types.InlineKeyboardButton(text="забыл пароль",
+                                                 callback_data="забыл пароль")
     key.add(button1, button2, button3)
-    bot.send_message(message.chat.id, "Бот артёмка для регистрации или замены пароля в игре Pixel Battle \n если вам нужна какаета помощь то обращаться к @art_kis_2077", reply_markup=key)
+    bot.send_message(
+        message.chat.id,
+        "Бот артёмка для регистрации или замены пароля в игре Pixel Battle \n если вам нужна какаета помощь то обращаться к @art_kis_2077",
+        reply_markup=key)
 
 
 @bot.message_handler(content_types=["text"])
@@ -116,36 +128,49 @@ def text(message: telebot.types.Message):
             bot_log[message.chat.id]["login"] = message.text
             bot.send_message(message.chat.id, "придумайте пароль")
         else:
-            bot.send_message(message.chat.id, "такой пользователь уже существует, придумайте новый логин")
+            bot.send_message(
+                message.chat.id,
+                "такой пользователь уже существует, придумайте новый логин")
     elif user_log["log"] == "WAIT_NEW_PASSWORD":
         bot_log[message.chat.id]["log"] = "WAIT_NEW_PASSWORD_2"
         bot_log[message.chat.id]["new_password"] = message.text
-        bot.send_message(message.chat.id, "подтвердите пароль (ещё раз введите этот пароль)")
+        bot.send_message(message.chat.id,
+                         "подтвердите пароль (ещё раз введите этот пароль)")
     elif user_log["log"] == "WAIT_NEW_PASSWORD_2":
         if bot_log[message.chat.id]["new_password"] == message.text:
             bot_log[message.chat.id]["password"] = message.text
             bot.send_message(message.chat.id, "у вас новый пароль")
         else:
-            bot.send_message(message.chat.id, "пароли не совпадают, введите заново новый пароль")
+            bot.send_message(
+                message.chat.id,
+                "пароли не совпадают, введите заново новый пароль")
             bot_log[message.chat.id] = {"log": "WAIT_NEW_PASSWORD"}
     elif user_log["log"] == "WAIT_PASSWORD":
         bot_log[message.chat.id]["log"] = "SUCCESS"
         bot_log[message.chat.id]["password"] = message.text
-        db["users"][bot_log[message.chat.id]["login"]] = {"password": message.text, "telegramm": message.chat.id}
-        bot.send_message(message.chat.id, "вы зарегестрированны, игра по ссылке: https://SchoolWar.maxar2005.repl.co")
+        db["users"][bot_log[message.chat.id]["login"]] = {
+            "password": message.text,
+            "telegramm": message.chat.id
+        }
+        bot.send_message(
+            message.chat.id,
+            "вы зарегестрированны, игра по ссылке: https://SchoolWar.maxar2005.repl.co"
+        )
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call: telebot.types.CallbackQuery):
     user = getUserbyTel(call.message.chat.id)
     if call.data == 'регистрация':
-        if not user and (call.message.chat.id not in bot_log or bot_log[call.message.chat.id]['log'] != "SUCCESS"):
+        if not user and (call.message.chat.id not in bot_log
+                         or bot_log[call.message.chat.id]['log'] != "SUCCESS"):
             bot.send_message(call.message.chat.id, "придумайте ваш логин")
             bot_log[call.message.chat.id] = {"log": "WAIT_LOGIN"}
         else:
             bot.send_message(call.message.chat.id, "вы уже зарегистрированы")
     elif call.data == 'забыл пароль':
-        if (call.message.chat.id in bot_log and bot_log[call.message.chat.id]['log'] == "SUCCESS") or user:
+        if (call.message.chat.id in bot_log
+                and bot_log[call.message.chat.id]['log'] == "SUCCESS") or user:
             bot.send_message(call.message.chat.id, "пришлите новый пароль")
             bot_log[call.message.chat.id] = {"log": "WAIT_NEW_PASSWORD"}
         else:

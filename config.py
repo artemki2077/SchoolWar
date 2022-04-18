@@ -1,17 +1,16 @@
 import datetime as dt
 
-waiting = dt.timedelta(minutes=3)
+waiting = dt.timedelta(minutes=2)
+
+colors = [
+	"#FFA500", "#664200", "#331a00", "#00fac8", "#009476", "#9600c8", "#490061", "#e1beaa", "#c4845e", 
+	"#ffaabe", "#ff5f82", "#000000", "#808080", "#C0C0C0", "#FFFFFF", "#FF00FF", "#800080", "#FF0000", 
+	"#800000", "#FFFF00", "#808000", "#00FF00", "#008000", "#00FFFF", "#008080", "#0000FF", "#000080"
+]
 
 teams = {
 	"LEV": ['1', '2', '3', '4'],
 	"VOLKI": ['5', '6', '7', '8'],
 	"VORONI": ['9', '10', '11', '12'],
 	"clean": ["666"]
-}
-
-colors = {
-	"LEV": "#FFA500",
-	"VOLKI": "#333333",
-	"VORONI": "#8b00ff",
-	"clean": "#fff"
 }

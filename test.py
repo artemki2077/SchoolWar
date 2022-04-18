@@ -9,7 +9,7 @@ from replit import db
 # 			j["team"] = "#8b00ff"
 # db["map"] = map
 # db["bot_log"] = {}
-print(db["users"])
+# print(db["users"])
 # db["map"][0][0] = {"team": None}
 # print(db["map"])
 # print(db["time"])

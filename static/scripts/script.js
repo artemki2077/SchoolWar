@@ -33,6 +33,10 @@ let cursor = {
 var cells = Array(grid).fill().map((cell) => (cell = Array(grid)));
 var phone = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
+function setColor(new_color) {
+	color = new_color;
+}
+
 function rect(x, y, w, h, c, alpha = 1) {
 	ctx.globalAlpha = alpha;
 	ctx.fillStyle = c;
