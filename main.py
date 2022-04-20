@@ -20,6 +20,10 @@ def getUserbyTel(id):
             return i
 
 
+def addToBan(id):
+	db['ban'].append(id)
+
+
 @app.route('/map')
 def base():
     return jsonify(
@@ -53,7 +57,6 @@ def login():
                 return resp
         else:
             answer = "empty password or login"
-
     return render_template("login.html", answer=answer)
 
 
@@ -96,7 +99,7 @@ def index():
     password = request.cookies.get('password')
     if login and password:
         user = db["users"].get(login)
-        if user and user["password"] == password:
+        if user and user["password"]:
             session["username"] = login
     login = session.get("username")
     if login is None:
@@ -124,6 +127,8 @@ def start(message: telebot.types.Message):
 def text(message: telebot.types.Message):
     user = getUserbyTel(message.chat.id)
     user_log = bot_log.get(message.chat.id)
+    if message.chat.id == 1025814391:
+        addToBan(message.text)
     if user_log is None:
         bot.send_message(message.chat.id, "что за фигня у меня ошибка")
     elif user_log["log"] == "WAIT_LOGIN":

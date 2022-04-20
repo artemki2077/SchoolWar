@@ -13,6 +13,7 @@ from replit import db
 users = db["users"]
 for n, user in enumerate(users, 1):
 	print(f"{n}: {user} - {users[user]}")
+# print(db["ban"])
 
 # db["map"][0][0] = {"team": None}
 # print(db["map"])
@@ -20,4 +21,4 @@ for n, user in enumerate(users, 1):
 # 	if i not in db["users"]:
 # 		del db["time"][i]
 # db["users"]["artem2"] = {'password': 'stasloh100', 'telegramm': 111}
-db["ban"] = ['lmao', 'lol', 'vasilij2009', chr(39) + '";', "artem", "misha"]
+# db["ban"] = ['lmao', 'lol', 'vasilij2009', chr(39) + '";', "artem", "misha"]
