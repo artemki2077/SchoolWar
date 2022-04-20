@@ -17,7 +17,7 @@ def getUserbyTel(id):
     users = db.get("users")
     for i in users:
         if users[i]['telegramm'] == id:
-            return id
+            return i
 
 
 @app.route('/map')
@@ -29,7 +29,7 @@ def base():
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     login = session.get("username")
-    if login is not None:
+    if login:
         return redirect("/")
     answer = "регистрация в тг @art_gamebot"
     if request.method == 'POST':
@@ -57,12 +57,14 @@ def login():
     return render_template("login.html", answer=answer)
 
 
-@app.route('/click', methods=['POST', 'GET'])
+@app.route('/click', methods=['POST'])
 def click():
     if request.method == 'POST':
         id = session.get("username", -1)
         if id == -1:
-            return redirect("/login")
+            return "не не фигня какаета, перезайдите"
+        if id in db["ban"]:
+            return 'вы забанены'
         last_time = dt.datetime.strptime(
             db["time"].get(id, "23/04/2003 00:00:00"), "%d/%m/%Y %H:%M:%S")
         x = int(request.form.get('x'))
@@ -70,7 +72,8 @@ def click():
         color = request.form.get('color')
         answer = "SUCCESS"
         delta = dt.datetime.now() - last_time
-        if delta > conf.waiting:
+        if (delta >= conf.waiting):
+            print(f"{id} - {x}:{y}")
             db["map"][x][y] = {"team": color}
             db['time'][id] = dt.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         else:
@@ -93,7 +96,7 @@ def index():
     password = request.cookies.get('password')
     if login and password:
         user = db["users"].get(login)
-        if user and user["password"]:
+        if user and user["password"] == password:
             session["username"] = login
     login = session.get("username")
     if login is None:
@@ -119,9 +122,10 @@ def start(message: telebot.types.Message):
 
 @bot.message_handler(content_types=["text"])
 def text(message: telebot.types.Message):
+    user = getUserbyTel(message.chat.id)
     user_log = bot_log.get(message.chat.id)
     if user_log is None:
-        bot.send_message(message.chat.id, "что за фигня")
+        bot.send_message(message.chat.id, "что за фигня у меня ошибка")
     elif user_log["log"] == "WAIT_LOGIN":
         if message.text not in db["users"]:
             bot_log[message.chat.id]["log"] = "WAIT_PASSWORD"
@@ -139,7 +143,9 @@ def text(message: telebot.types.Message):
     elif user_log["log"] == "WAIT_NEW_PASSWORD_2":
         if bot_log[message.chat.id]["new_password"] == message.text:
             bot_log[message.chat.id]["password"] = message.text
+            db["users"][user]['password'] = message.text
             bot.send_message(message.chat.id, "у вас новый пароль")
+            user_log["log"] = None
         else:
             bot.send_message(
                 message.chat.id,

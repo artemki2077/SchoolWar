@@ -32,6 +32,7 @@ let cursor = {
 };
 var cells = Array(grid).fill().map((cell) => (cell = Array(grid)));
 var phone = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+var setk = true;
 
 function setColor(new_color) {
 	color = new_color;
@@ -44,7 +45,7 @@ function rect(x, y, w, h, c, alpha = 1) {
 	ctx.globalAlpha = 1.0;
 }
 function draw_cursor(){
-	rect(cursor.x, cursor.y, (canvas_size / grid) - 1, (canvas_size / grid) - 1, "#808080", alpha = 0.5);
+	rect(cursor.x, cursor.y, (canvas_size / grid) - (setk ? 1 : 0), (canvas_size / grid) - (setk ? 1 : 0), "#808080", alpha = 0.01);
 }
 
 class Cell {
@@ -67,7 +68,7 @@ class Cell {
 		return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.w);
 	}
 	show() {
-		rect(this.x, this.y, this.w - 1, this.w - 1, this.color);
+		rect(this.x, this.y, this.w - (setk ? 1 : 0), this.w - (setk ? 1 : 0), this.color);
 	}
 	
 }
@@ -197,7 +198,7 @@ function onPointerMove(e)
     }
 	move_x = ((getEventLocation(e).x - (window.innerWidth / 2))/cameraZoom) + (window.innerWidth / 2)  - cameraOffset.x;
 	move_y =((getEventLocation(e).y - (window.innerHeight / 2))/cameraZoom) + (window.innerHeight / 2)  - cameraOffset.y;
-	// console.log(move_x, move_y);
+	console.log(cursor.i, cursor.j);
 	
 }
 
@@ -277,21 +278,24 @@ function click(e) {
 					}
 				}
 			});
-	$.ajax({
-		type: 'POST',
-		url: 'https://schoolwar.maxar2005.repl.co/click',
-		data: {
-			'x': cursor.i,
-			'y': cursor.j,
-			"color": color
-		},
-		success: function(msg){
-				update();
-				if (msg.indexOf("SUCCESS") == -1){
-					alert(msg);
-				}
-		}
-	});
+	if(confirm('вы точно хотите кликнуть')){
+		$.ajax({
+			type: 'POST',
+			url: 'https://schoolwar.maxar2005.repl.co/click',
+			data: {
+				'x': cursor.i,
+				'y': cursor.j,
+				"color": color
+			},
+			success: function(msg){
+					update();
+					if (msg.indexOf("SUCCESS") == -1){
+						alert(msg);
+					}
+			}
+		});
+	}
+		
 }
 
 for(let i=0;i < 50; i++){
@@ -304,175 +308,6 @@ canvas.addEventListener('mouseup', onPointerUp)
 canvas.addEventListener('touchend',  (e) => handleTouch(e, onPointerUp))
 canvas.addEventListener('mousemove', onPointerMove)
 canvas.addEventListener('touchmove', (e) => handleTouch(e, onPointerMove))
-canvas.addEventListener( 'wheel', (e) => adjustZoom(e.deltaY*SCROLL_SENSITIVITY))
+canvas.addEventListener( 'wheel', (e) => adjustZoom(-e.deltaY*SCROLL_SENSITIVITY))
 
 draw()
-
-// 	// import {teams, codes} from './config.js';
-
-// window.onload = () => setInterval(draw, 1000 / 60);
-
-// setInterval(update, 2000);
-
-// // for(let i=0;i < 50; i++){
-// // 	console.log(`%c ${i + 1}:  если вы хотите что то взломать то вы здесь ничего не найдёте`, 'background: #222; color: #ff0000; font-size: 1.5em');
-// // }
-
-// var canvas = document.getElementById("canvas");
-// var ctx = canvas.getContext("2d");
-// var minw = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight
-// var width = minw - 100;
-// var height = minw - 100;
-// var grid = 100;
-// let cursor = {
-//   x: -60,
-//   y: -60,
-// 	i: 0,
-// 	j: 0,
-// };
-// var last_map;
-// var neighbor = [[0, 1], [1, 0], [-1, 0], [0, -1]];
-
-// canvas.width = width + 2;
-// canvas.height = height + 2;
-// ctx.textAlign = "center";
-// var cells = Array(grid).fill().map((cell) => (cell = Array(grid)));
-// var code = "666";
-
-// function rect(x, y, w, h, c, alpha = 1) {
-// 	ctx.globalAlpha = alpha;
-// 	ctx.fillStyle = c;
-// 	ctx.fillRect(x, y, w, h);
-// 	ctx.globalAlpha = 1.0;
-// }
-
-// class Cell {
-// 	constructor(i, j, c="#ffffff") {
-// 		this.i = i;
-// 		this.j = j;
-// 		this.w = width / grid;
-// 		this.x = i * this.w + 2;
-// 		this.y = j * this.w + 2;
-// 		this.c = c
-// 		this.changeColor();
-// 		this.show();
-// 	}
-// 	check(team){
-// 		for(let i=0; i < neighbor.length;i++ ){
-			
-// 		}
-// 	}	
-
-// 	checkMouse(x, y) {
-// 		return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.w);
-// 	}
-// 	darkColor(){
-// 		this.color = "#A1E7FB";
-// 	}
-
-// 	changeColor(color = this.c) {
-// 		this.color = color;
-// 	}
-// 	show() {
-// 		rect(this.x, this.y, this.w - 2, this.w - 2, this.color);
-// 	}
-	
-// }
-
-// function addHexColor(c1, c2) {
-//   var hexStr = (parseInt(c1, 16) + parseInt(c2, 16)).toString(16);
-//   while (hexStr.length < 6) { hexStr = '0' + hexStr; }
-//   return hexStr;
-// }
-
-// function start(){
-// 	rect(0, 0, width + 2, width + 2, "#A1E7FB");
-// 	$.getJSON('https://schoolwar.maxar2005.repl.co/map', function(data) {
-// 		last_map = data;
-// 	   for (let ix = 0; ix < grid; ix += 1){
-// 		for (let iy = 0; iy < grid; iy += 1){
-// 			if(data[ix][iy].team == null){
-// 				cells[ix][iy] = new Cell(ix, iy);
-// 			}else{
-// 				cells[ix][iy] = new Cell(ix, iy, data[ix][iy].team);
-// 			}
-// 		}
-// 	}
-// 	draw();
-// 	});
-	
-// }
-
-// function update() {
-// 	$.getJSON('https://schoolwar.maxar2005.repl.co/map', function(data) {
-// 	   if(JSON.stringify(data)!=JSON.stringify(last_map)){
-// 		   last_map = data;
-// 		   start();
-// 	   }
-// 	});
-// }
-
-
-// // rect(ix + 2, iy + 2, width / grid - 2, height / grid - 2, "#fff");
-
-// function getCursorPosition(canvas, event) {
-// 	const rect = canvas.getBoundingClientRect();
-// 	const x = event.clientX - rect.left;
-// 	const y = event.clientY - rect.top;
-// 	callAll((item) => {
-// 		if(item != undefined){
-// 			if (item.checkMouse(x, y)) {
-// 				cursor.x = item.x;
-// 				cursor.y = item.y;
-// 				cursor.i = item.i;
-// 				cursor.j = item.j;
-// 			}
-// 		}
-// 	});
-// }
-
-
-// function click(e) {
-// 	if(1){
-// 		$.ajax({
-// 		    type: 'POST',
-// 		    url: 'https://schoolwar.maxar2005.repl.co/click',
-// 		    data: {
-// 		        'x': cursor.i,
-// 				'y': cursor.j,
-// 		        "id": "10"
-// 		    },
-// 		    success: function(msg){
-// 					start();
-// 					if (msg.indexOf("SUCCESS") == -1){
-// 						alert(msg);
-// 					}
-		
-					
-// 		    }
-// 		});}
-// }
-
-// function callAll(callback, reverse) {
-// 	if (reverse)
-// 		for (var i = grid - 1; i >= 0; i--)
-// 			for (var j = grid - 1; j >= 0; j--) callback(cells[j][i], i, j);
-// 	else
-// 		for (var i = 0; i < grid; i++)
-// 			for (var j = 0; j < grid; j++) callback(cells[j][i], i, j);
-// }
-// start();
-
-// canvas.addEventListener("mousemove", function (e) {
-// 	getCursorPosition(canvas, e);
-// });
-// canvas.addEventListener("click", click)
-
-// function draw() {
-// 	callAll((item) => {
-// 		if(item != undefined){
-// 			item.show();
-// 		}
-// 	});
-// 	rect(cursor.x, cursor.y, (width / grid) -2, (height / grid) - 2, "#808080", alpha = 0.5);
-// }

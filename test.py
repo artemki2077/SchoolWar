@@ -9,7 +9,15 @@ from replit import db
 # 			j["team"] = "#8b00ff"
 # db["map"] = map
 # db["bot_log"] = {}
-# print(db["users"])
+
+users = db["users"]
+for n, user in enumerate(users, 1):
+	print(f"{n}: {user} - {users[user]}")
+
 # db["map"][0][0] = {"team": None}
 # print(db["map"])
-# print(db["time"])
+# for i in db["time"]:
+# 	if i not in db["users"]:
+# 		del db["time"][i]
+# db["users"]["artem2"] = {'password': 'stasloh100', 'telegramm': 111}
+db["ban"] = ['lmao', 'lol', 'vasilij2009', chr(39) + '";', "artem", "misha"]
