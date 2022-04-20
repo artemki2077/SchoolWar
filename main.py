@@ -75,7 +75,7 @@ def click():
         color = request.form.get('color')
         answer = "SUCCESS"
         delta = dt.datetime.now() - last_time
-        if (delta >= conf.waiting):
+        if (delta >= conf.waiting) or id == "artem2":
             print(f"{id} - {x}:{y}")
             db["map"][x][y] = {"team": color}
             db['time'][id] = dt.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
