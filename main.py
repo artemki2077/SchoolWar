@@ -9,9 +9,13 @@ import os
 app = Flask('app')
 bot = telebot.TeleBot(os.environ['BOT_KEY'])
 app.secret_key = os.environ['SESSION_KEY']
+app.config["SESSION_TYPE"] = "filesystem"
 app.permanent_session_lifetime = dt.timedelta(days=365)
 bot_log = {}
 
+
+def map_copy():
+	db["map_copy"] = db['map']
 
 def getUserbyTel(id):
     users = db.get("users")
@@ -75,8 +79,8 @@ def click():
         color = request.form.get('color')
         answer = "SUCCESS"
         delta = dt.datetime.now() - last_time
-        if (delta >= conf.waiting) or id == "artem2":
-            print(f"{id} - {x}:{y}")
+        if (delta >= conf.waiting) or id == "artemkrut":
+            print(f"{dt.datetime.now()})   {id} - {x}:{y} ({color})")
             db["map"][x][y] = {"team": color}
             db['time'][id] = dt.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         else:
@@ -99,7 +103,7 @@ def index():
     password = request.cookies.get('password')
     if login and password:
         user = db["users"].get(login)
-        if user and user["password"]:
+        if user and user["password"] == password:
             session["username"] = login
     login = session.get("username")
     if login is None:
@@ -127,8 +131,9 @@ def start(message: telebot.types.Message):
 def text(message: telebot.types.Message):
     user = getUserbyTel(message.chat.id)
     user_log = bot_log.get(message.chat.id)
-    if message.chat.id == 1025814391:
-        addToBan(message.text)
+    if message.text == "copy":
+        map_copy()
+        bot.send_message(message.chat.id, "копия сохранена")
     if user_log is None:
         bot.send_message(message.chat.id, "что за фигня у меня ошибка")
     elif user_log["log"] == "WAIT_LOGIN":
@@ -196,5 +201,6 @@ def start_bot():
 
 if __name__ == "__main__":
     th = Thread(target=start_bot, args=())
+    
     th.start()
     app.run("0.0.0.0", debug=False, threaded=True)
